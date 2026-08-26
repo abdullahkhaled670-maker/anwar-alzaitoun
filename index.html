@@ -454,6 +454,97 @@ function showToast(msg) {
 }
 
 
+
+const SB_URL = 'https://yivebjxkztbgpzhkrtwy.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpdmVianhrenRiZ3B6aGtydHd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzU4OTQsImV4cCI6MjEwMjAxMTg5NH0.wnrPwb738VFWwPjlqRgiEWZxsyRz8Ud72L_8WHPIvLg';
+
+const SB = {
+  async get(t) {
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/${t}?select=*&order=id.asc`,{headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
+      return r.json();
+    } catch(e) { return []; }
+  },
+  async insert(t, d) {
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(d)});
+      return r.json();
+    } catch(e) { return null; }
+  },
+  async del(t, id) {
+    try {
+      await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'DELETE',headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
+    } catch(e) {}
+  }
+};
+
+// Load projects from Supabase
+async function loadProjects() {
+  const data = await SB.get('projects');
+  if(!Array.isArray(data) || !data.length) return;
+  const pg = document.querySelector('#page-projects .section');
+  pg.innerHTML = '<div class="projects-grid" id="projectsGrid"></div>';
+  const grid = document.getElementById('projectsGrid');
+  data.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.dataset.id = p.id;
+    card.innerHTML = `${p.img?`<img class="project-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none'"/>`:''}
+      <div class="project-body">
+        <div class="project-cat">${p.cat||''}</div>
+        <div class="project-name">${p.name}</div>
+        <div class="project-desc">${p.description||''}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// Load reviews from Supabase
+async function loadReviews() {
+  const data = await SB.get('reviews');
+  if(!Array.isArray(data) || !data.length) return;
+  const reviewsDiv = document.querySelector('.reviews');
+  if(!reviewsDiv) return;
+  // Keep existing reviews and add new ones
+  data.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.dataset.id = r.id;
+    card.innerHTML = `<div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">${r.text}</p><div class="review-name">${r.name}</div><div class="review-role">${r.role||''}</div>`;
+    reviewsDiv.appendChild(card);
+  });
+}
+
+// Load products from Supabase
+async function loadSBProducts() {
+  const data = await SB.get('products');
+  if(!Array.isArray(data) || !data.length) return;
+  // Add to ALL_PRODUCTS
+  data.forEach(p => {
+    if(!ALL_PRODUCTS.find(x=>x.id===p.id)) {
+      ALL_PRODUCTS.push({id:p.id,cat:p.cat,name:p.name,desc:p.description||'',price:p.price||0,unit:p.unit||'حبة',badge:p.badge||'',img:p.img||''});
+    }
+  });
+  renderProducts(ALL_PRODUCTS);
+}
+
+// Load services from Supabase
+async function loadSBServices() {
+  const data = await SB.get('services');
+  if(!Array.isArray(data) || !data.length) return;
+  data.forEach(s => {
+    const svcDiv = s.cat==='تشطيبات' ? document.querySelector('.svc-section-title.svc-finishing') : document.querySelector('.svc-section-title.svc-maintenance');
+    if(!svcDiv) return;
+    const card = document.createElement('div');
+    card.className = 'svc-card';
+    card.dataset.id = s.id;
+    card.innerHTML = `${s.img?`<img class="svc-img" src="${s.img}" alt="" onerror="this.style.display='none'"/>`:''}
+      <div><div class="svc-icon">${s.icon||'🔧'}</div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.description||''}</div><div class="svc-price">${s.price||''}</div>
+      <button class="btn-wa-small" onclick="window.open('https://wa.me/201121543995?text=مرحباً، أريد الاستفسار عن: ${s.name}','_blank')">💬 استفسر الآن</button></div>`;
+    svcDiv.insertAdjacentElement('afterend', card);
+  });
+}
+
 // ===== ADMIN =====
 const ADMIN_PASS = 'a1995416&';
 const CLOUD_NAME = 'gz1laq3l';
@@ -562,21 +653,23 @@ async function handleUpload(input, targetId) {
   } catch(e) { showToast('❌ فشل الرفع'); }
 }
 
-function addAdminProduct() {
+async function addAdminProduct() {
   const name = document.getElementById('newPName').value;
   if(!name) { showToast('❌ اكتب اسم المنتج'); return; }
   const p = {
-    id: Date.now(),
     cat: document.getElementById('newPCat').value,
     name,
-    desc: document.getElementById('newPDesc').value,
+    description: document.getElementById('newPDesc').value,
     price: Number(document.getElementById('newPPrice').value)||0,
     unit: document.getElementById('newPUnit').value||'حبة',
     badge: document.getElementById('newPBadge').value,
     img: document.getElementById('newPImg').value,
   };
-  adminProducts.push(p);
-  ALL_PRODUCTS.push(p);
+  showToast('⏳ جاري الحفظ...');
+  const res = await SB.insert('products', p);
+  const saved = res ? (Array.isArray(res)?res[0]:res) : {...p,id:Date.now()};
+  adminProducts.push(saved);
+  ALL_PRODUCTS.push({id:saved.id,cat:saved.cat,name:saved.name,desc:saved.description||'',price:saved.price||0,unit:saved.unit||'حبة',badge:saved.badge||'',img:saved.img||''});
   renderProducts(currentCat==='الكل'?ALL_PRODUCTS:ALL_PRODUCTS.filter(x=>x.cat===currentCat));
   showToast('✅ أُضيف المنتج: '+name);
   renderAdminTab();
@@ -608,15 +701,19 @@ function addAdminService() {
   renderAdminTab();
 }
 
-function addAdminProject() {
+async function addAdminProject() {
   const name = document.getElementById('newPrjName').value;
   if(!name) { showToast('❌ اكتب اسم المشروع'); return; }
   const p = {
     name,
     cat: document.getElementById('newPrjCat').value,
-    desc: document.getElementById('newPrjDesc').value,
+    description: document.getElementById('newPrjDesc').value,
     img: document.getElementById('newPrjImg').value,
   };
+  // Save to Supabase
+  showToast('⏳ جاري الحفظ...');
+  const res = await SB.insert('projects', p);
+  if(res) p.id = Array.isArray(res)?res[0].id:res.id;
   adminProjects.push(p);
   // Update projects page
   const pg = document.querySelector('#page-projects .section');
@@ -626,13 +723,13 @@ function addAdminProject() {
   const card = document.createElement('div');
   card.className = 'project-card';
   card.innerHTML = `${p.img?`<img class="project-img" src="${p.img}" alt="" onerror="this.style.display='none'"/>`:''}
-    <div class="project-body"><div class="project-cat">${p.cat}</div><div class="project-name">${p.name}</div><div class="project-desc">${p.desc}</div></div>`;
+    <div class="project-body"><div class="project-cat">${p.cat}</div><div class="project-name">${p.name}</div><div class="project-desc">${p.description}</div></div>`;
   grid.appendChild(card);
   showToast('✅ أُضيف المشروع: '+name);
   renderAdminTab();
 }
 
-function addAdminReview() {
+async function addAdminReview() {
   const name = document.getElementById('newRevName').value;
   if(!name) { showToast('❌ اكتب اسم العميل'); return; }
   const r = {
@@ -640,8 +737,9 @@ function addAdminReview() {
     role: document.getElementById('newRevRole').value,
     text: document.getElementById('newRevText').value,
   };
+  showToast('⏳ جاري الحفظ...');
+  await SB.insert('reviews', r);
   adminReviews.push(r);
-  // Add to reviews section
   const reviewsDiv = document.querySelector('.reviews');
   if(reviewsDiv) {
     const card = document.createElement('div');
@@ -655,6 +753,10 @@ function addAdminReview() {
 
 // ===== INIT =====
 renderProducts(ALL_PRODUCTS);
+loadProjects();
+loadReviews();
+loadSBProducts();
+loadSBServices();
 </script>
 
 <!-- ADMIN LOGIN -->
