@@ -643,17 +643,6 @@ function setAdminTab(tab, btn) {
   adminTab = tab;
   document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  } else if(adminTab === 'settings') {
-    b.innerHTML = `
-      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:8px">البيانات الأساسية:</div>
-      <input id="setPhone" class="admin-input" placeholder="رقم الموبايل" value="011 2154 3995"/>
-      <input id="setLand" class="admin-input" placeholder="الخط الأرضي" value="02-2734860"/>
-      <input id="setAddr" class="admin-input" placeholder="العنوان" value="5 شارع عبد الله الشريبيني، مدينة نصر"/>
-      <input id="setHours" class="admin-input" placeholder="ساعات العمل" value="يومياً من 9 صباحاً حتى 11 مساءً"/>
-      <input id="setEmail" class="admin-input" placeholder="البريد الإلكتروني" value="abdullahkhaled670@gmail.com"/>
-      <button class="admin-add-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
-    `;
-  }
   renderAdminTab();
 }
 
