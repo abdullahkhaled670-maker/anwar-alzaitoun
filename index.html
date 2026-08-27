@@ -571,12 +571,89 @@ function checkPass() {
   else showToast('❌ كلمة السر غلط');
 }
 
+
+// Delete helpers
+async function delProduct(id) {
+  if(!confirm('حذف المنتج؟')) return;
+  ALL_PRODUCTS.splice(ALL_PRODUCTS.findIndex(p=>p.id===id),1);
+  await SB.del('products', id);
+  renderProducts(currentCat==='الكل'?ALL_PRODUCTS:ALL_PRODUCTS.filter(x=>x.cat===currentCat));
+  renderAdminTab();
+  showToast('✅ تم الحذف');
+}
+
+function delSvcCard(idx) {
+  if(!confirm('حذف الخدمة؟')) return;
+  const cards = document.querySelectorAll('.svc-card');
+  if(cards[idx]) cards[idx].remove();
+  renderAdminTab();
+  showToast('✅ تم الحذف');
+}
+
+function delRevCard(idx) {
+  if(!confirm('حذف الرأي؟')) return;
+  const cards = document.querySelectorAll('.review-card');
+  if(cards[idx]) cards[idx].remove();
+  renderAdminTab();
+  showToast('✅ تم الحذف');
+}
+
+function delPrjCard(idx) {
+  if(!confirm('حذف المشروع؟')) return;
+  const cards = document.querySelectorAll('.project-card');
+  if(cards[idx]) cards[idx].remove();
+  renderAdminTab();
+  showToast('✅ تم الحذف');
+}
+
+function editProduct(id) {
+  const p = ALL_PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  const newName = prompt('اسم المنتج:', p.name);
+  if(!newName) return;
+  const newPrice = prompt('السعر:', p.price);
+  const newDesc = prompt('الوصف:', p.desc);
+  p.name = newName;
+  p.price = Number(newPrice)||p.price;
+  p.desc = newDesc||p.desc;
+  SB.insert('products', {id:p.id,name:p.name,price:p.price,description:p.desc,cat:p.cat,unit:p.unit,badge:p.badge,img:p.img});
+  renderProducts(currentCat==='الكل'?ALL_PRODUCTS:ALL_PRODUCTS.filter(x=>x.cat===currentCat));
+  renderAdminTab();
+  showToast('✅ تم التعديل');
+}
+
+
+function saveSettings() {
+  const phone = document.getElementById('setPhone').value;
+  const land = document.getElementById('setLand').value;
+  const addr = document.getElementById('setAddr').value;
+  const hours = document.getElementById('setHours').value;
+  const email = document.getElementById('setEmail').value;
+  // Update contact page
+  document.querySelectorAll('.contact-val a[href^="tel:01"]').forEach(a => { a.textContent = phone; a.href = 'tel:'+phone.replace(/\s/g,''); });
+  document.querySelectorAll('.contact-val a[href^="tel:02"]').forEach(a => { a.textContent = land; a.href = 'tel:'+land.replace(/-/g,''); });
+  document.querySelectorAll('.contact-val a[href*="maps"]').forEach(a => a.textContent = addr);
+  document.querySelectorAll('.contact-val a[href^="mailto"]').forEach(a => { a.textContent = email; a.href = 'mailto:'+email; });
+  showToast('✅ تم حفظ الإعدادات');
+}
+
 function exitAdmin() { document.getElementById('adminPanel').style.display='none'; }
 
 function setAdminTab(tab, btn) {
   adminTab = tab;
   document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
+  } else if(adminTab === 'settings') {
+    b.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:8px">البيانات الأساسية:</div>
+      <input id="setPhone" class="admin-input" placeholder="رقم الموبايل" value="011 2154 3995"/>
+      <input id="setLand" class="admin-input" placeholder="الخط الأرضي" value="02-2734860"/>
+      <input id="setAddr" class="admin-input" placeholder="العنوان" value="5 شارع عبد الله الشريبيني، مدينة نصر"/>
+      <input id="setHours" class="admin-input" placeholder="ساعات العمل" value="يومياً من 9 صباحاً حتى 11 مساءً"/>
+      <input id="setEmail" class="admin-input" placeholder="البريد الإلكتروني" value="abdullahkhaled670@gmail.com"/>
+      <button class="admin-add-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+    `;
+  }
   renderAdminTab();
 }
 
@@ -590,7 +667,22 @@ async function uploadImg(file) {
 function renderAdminTab() {
   const b = document.getElementById('adminBody');
   if(adminTab === 'products') {
+    const existingList = ALL_PRODUCTS.map((p,i)=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div>
+          <div style="font-size:12px;font-weight:700">${p.name}</div>
+          <div style="font-size:11px;color:#888">${p.cat} — ${p.price} ج.م</div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button onclick="editProduct(${p.id})" style="background:#1877F2;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">تعديل</button>
+          <button onclick="delProduct(${p.id})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">حذف</button>
+        </div>
+      </div>
+    `).join('');
     b.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">المنتجات الموجودة:</div>
+      ${existingList}
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin:10px 0 6px">+ إضافة منتج جديد:</div>
       <select id="newPCat" class="admin-select">
         <option>لمبات LED</option><option>أسلاك السويدي</option><option>كاميرات مراقبة</option><option>ملحقات شبكات</option><option>تأسيس كهرباء</option>
       </select>
@@ -602,12 +694,23 @@ function renderAdminTab() {
       </div>
       <input id="newPBadge" class="admin-input" placeholder="Badge (اختياري)"/>
       <input id="newPImg" class="admin-input" placeholder="رابط الصورة أو ارفع ↓"/>
-      <label class="upload-btn">${uploading?'⏳ جاري الرفع...':'📸 ارفع صورة المنتج'}<input type="file" accept="image/*" style="display:none" onchange="handleUpload(this,'newPImg')"/></label>
-      <button class="admin-add-btn" onclick="addAdminProduct()">+ إضافة المنتج</button>
-      <div style="font-size:11px;color:#888;margin-top:4px">المنتجات المضافة: ${adminProducts.length}</div>
+      <label class="upload-btn">📸 ارفع صورة المنتج<input type="file" accept="image/*" style="display:none" onchange="handleUpload(this,'newPImg')"/></label>
+      <button class="admin-add-btn" onclick="addAdminProduct()">+ إضافة منتج جديد</button>
     `;
   } else if(adminTab === 'services') {
+    const svcCards = document.querySelectorAll('.svc-card');
+    const svcList = Array.from(svcCards).map((el,i)=>{
+      const name = el.querySelector('.svc-name')?el.querySelector('.svc-name').textContent:'';
+      const price = el.querySelector('.svc-price')?el.querySelector('.svc-price').textContent:'';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div><div style="font-size:12px;font-weight:700">${name}</div><div style="font-size:11px;color:#888">${price}</div></div>
+        <button onclick="delSvcCard(${i})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">حذف</button>
+      </div>`;
+    }).join('');
     b.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">الخدمات الموجودة:</div>
+      ${svcList}
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin:10px 0 6px">+ إضافة خدمة جديدة:</div>
       <select id="newSCat" class="admin-select">
         <option value="تشطيبات">🏠 تشطيبات</option>
         <option value="صيانة">🔧 صيانة وتركيبات</option>
@@ -618,26 +721,47 @@ function renderAdminTab() {
       <input id="newSPrice" class="admin-input" placeholder="السعر" value="حسب المشروع"/>
       <input id="newSImg" class="admin-input" placeholder="رابط الصورة أو ارفع ↓"/>
       <label class="upload-btn">📸 ارفع صورة الخدمة<input type="file" accept="image/*" style="display:none" onchange="handleUpload(this,'newSImg')"/></label>
-      <button class="admin-add-btn" onclick="addAdminService()">+ إضافة الخدمة</button>
-      <div style="font-size:11px;color:#888;margin-top:4px">الخدمات المضافة: ${adminServices.length}</div>
+      <button class="admin-add-btn" onclick="addAdminService()">+ إضافة خدمة جديدة</button>
     `;
   } else if(adminTab === 'projects') {
+    const prjCards = document.querySelectorAll('.project-card');
+    const prjList = Array.from(prjCards).map((el,i)=>{
+      const name = el.querySelector('.project-name')?el.querySelector('.project-name').textContent:'';
+      const cat = el.querySelector('.project-cat')?el.querySelector('.project-cat').textContent:'';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div><div style="font-size:12px;font-weight:700">${name}</div><div style="font-size:11px;color:#888">${cat}</div></div>
+        <button onclick="delPrjCard(${i})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">حذف</button>
+      </div>`;
+    }).join('') || '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px">لا توجد مشاريع بعد</div>';
     b.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">المشاريع الموجودة:</div>
+      ${prjList}
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin:10px 0 6px">+ إضافة مشروع جديد:</div>
       <input id="newPrjName" class="admin-input" placeholder="اسم المشروع *"/>
       <input id="newPrjCat" class="admin-input" placeholder="الفئة (تشطيبات / كاميرات...)"/>
       <input id="newPrjDesc" class="admin-input" placeholder="الوصف"/>
       <input id="newPrjImg" class="admin-input" placeholder="رابط الصورة أو ارفع ↓"/>
       <label class="upload-btn">📸 ارفع صورة المشروع<input type="file" accept="image/*" style="display:none" onchange="handleUpload(this,'newPrjImg')"/></label>
-      <button class="admin-add-btn" onclick="addAdminProject()">+ إضافة المشروع</button>
-      <div style="font-size:11px;color:#888;margin-top:4px">المشاريع المضافة: ${adminProjects.length}</div>
+      <button class="admin-add-btn" onclick="addAdminProject()">+ إضافة مشروع جديد</button>
     `;
   } else if(adminTab === 'reviews') {
+    const revCards = document.querySelectorAll('.review-card');
+    const revList = Array.from(revCards).map((el,i)=>{
+      const name = el.querySelector('.review-name')?el.querySelector('.review-name').textContent:'';
+      const text = el.querySelector('.review-text')?el.querySelector('.review-text').textContent:'';
+      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div style="flex:1"><div style="font-size:12px;font-weight:700">${name}</div><div style="font-size:11px;color:#888;margin-top:2px">${text.substring(0,50)}...</div></div>
+        <button onclick="delRevCard(${i})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;flex-shrink:0;margin-right:6px">حذف</button>
+      </div>`;
+    }).join('');
     b.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">الآراء الموجودة:</div>
+      ${revList}
+      <div style="font-size:12px;font-weight:700;color:#c9a84c;margin:10px 0 6px">+ إضافة رأي جديد:</div>
       <input id="newRevName" class="admin-input" placeholder="اسم العميل *"/>
       <input id="newRevRole" class="admin-input" placeholder="الدور (مثال: صاحب محل — مدينة نصر)"/>
       <textarea id="newRevText" class="admin-input" placeholder="رأي العميل" rows="3" style="resize:none"></textarea>
-      <button class="admin-add-btn" onclick="addAdminReview()">+ إضافة الرأي</button>
-      <div style="font-size:11px;color:#888;margin-top:4px">الآراء المضافة: ${adminReviews.length}</div>
+      <button class="admin-add-btn" onclick="addAdminReview()">+ إضافة رأي جديد</button>
     `;
   }
 }
@@ -778,6 +902,7 @@ loadSBServices();
       <button class="admin-tab" onclick="setAdminTab('services',this)">خدمات</button>
       <button class="admin-tab" onclick="setAdminTab('projects',this)">مشاريع</button>
       <button class="admin-tab" onclick="setAdminTab('reviews',this)">آراء</button>
+      <button class="admin-tab" onclick="setAdminTab('settings',this)">إعدادات</button>
       <button class="admin-exit" onclick="exitAdmin()">خروج</button>
     </div>
   </div>
