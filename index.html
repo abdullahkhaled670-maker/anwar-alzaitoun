@@ -548,20 +548,13 @@ function buildProjectCard(p) {
   const hasImg = p.img && p.img.trim();
   const thumb = hasVideo ? (getYTThumb(p.video) || p.img || '') : (p.img || '');
   const mediaClick = hasVideo
-    ? `openLightbox('video','${p.video}','${(p.name||'').replace(/'/g,"\\'")}'')`
+    ? `openLightbox('video','${p.video}','${(p.name||'').replace(/'/g,"\\'")}')` 
     : (hasImg ? `openLightbox('image','${p.img}','${(p.name||'').replace(/'/g,"\\'")}')` : '');
 
   const mediaHTML = (hasVideo || hasImg) ? `
     <div class="project-media" onclick="${mediaClick}">
       ${thumb ? `<img class="project-video-thumb" src="${thumb}" alt="${p.name||''}" onerror="this.style.display='none'"/>` : ''}
-      <div class="play-overlay">
-        <div class="play-btn">
-          ${hasVideo
-            ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>`
-            : `<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`
-          }
-        </div>
-      </div>
+      ${hasVideo ? `<div class="play-overlay"><div class="play-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>` : ''}
     </div>` : '';
 
   return `${mediaHTML}
@@ -576,6 +569,7 @@ function buildProjectCard(p) {
 async function loadProjects() {
   const data = await SB.get('projects');
   if(!Array.isArray(data) || !data.length) return;
+  adminProjects = data;
   const pg = document.querySelector('#page-projects .section');
   pg.innerHTML = '<div class="projects-grid" id="projectsGrid"></div>';
   const grid = document.getElementById('projectsGrid');
@@ -592,9 +586,9 @@ async function loadProjects() {
 async function loadReviews() {
   const data = await SB.get('reviews');
   if(!Array.isArray(data) || !data.length) return;
+  adminReviews = data;
   const reviewsDiv = document.querySelector('.reviews');
   if(!reviewsDiv) return;
-  // Keep existing reviews and add new ones
   data.forEach(r => {
     const card = document.createElement('div');
     card.className = 'review-card';
@@ -674,26 +668,31 @@ async function delProduct(id) {
   showToast('✅ تم الحذف');
 }
 
-function delSvcCard(idx) {
+async function delSvcCard(id) {
   if(!confirm('حذف الخدمة؟')) return;
-  const cards = document.querySelectorAll('.svc-card');
-  if(cards[idx]) cards[idx].remove();
+  await SB.del('services', id);
+  const card = document.querySelector(`.svc-card[data-id="${id}"]`);
+  if(card) card.remove();
   renderAdminTab();
   showToast('✅ تم الحذف');
 }
 
-function delRevCard(idx) {
+async function delRevCard(id) {
   if(!confirm('حذف الرأي؟')) return;
-  const cards = document.querySelectorAll('.review-card');
-  if(cards[idx]) cards[idx].remove();
+  await SB.del('reviews', id);
+  adminReviews = adminReviews.filter(r => r.id !== id);
+  const card = document.querySelector(`.review-card[data-id="${id}"]`);
+  if(card) card.remove();
   renderAdminTab();
   showToast('✅ تم الحذف');
 }
 
-function delPrjCard(idx) {
+async function delPrjCard(id) {
   if(!confirm('حذف المشروع؟')) return;
-  const cards = document.querySelectorAll('.project-card');
-  if(cards[idx]) cards[idx].remove();
+  await SB.del('projects', id);
+  adminProjects = adminProjects.filter(p => p.id !== id);
+  const card = document.querySelector(`.project-card[data-id="${id}"]`);
+  if(card) card.remove();
   renderAdminTab();
   showToast('✅ تم الحذف');
 }
@@ -805,15 +804,11 @@ function renderAdminTab() {
       <button class="admin-add-btn" onclick="addAdminService()">+ إضافة خدمة جديدة</button>
     `;
   } else if(adminTab === 'projects') {
-    const prjCards = document.querySelectorAll('.project-card');
-    const prjList = Array.from(prjCards).map((el,i)=>{
-      const name = el.querySelector('.project-name')?el.querySelector('.project-name').textContent:'';
-      const cat = el.querySelector('.project-cat')?el.querySelector('.project-cat').textContent:'';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
-        <div><div style="font-size:12px;font-weight:700">${name}</div><div style="font-size:11px;color:#888">${cat}</div></div>
-        <button onclick="delPrjCard(${i})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">حذف</button>
-      </div>`;
-    }).join('') || '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px">لا توجد مشاريع بعد</div>';
+    const prjList = adminProjects.map(p=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div><div style="font-size:12px;font-weight:700">${p.name||''}</div><div style="font-size:11px;color:#888">${p.cat||''}</div></div>
+        <button onclick="delPrjCard(${p.id})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer">حذف</button>
+      </div>`).join('') || '<div style="font-size:12px;color:#aaa;text-align:center;padding:10px">لا توجد مشاريع بعد</div>';
     b.innerHTML = `
       <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">المشاريع الموجودة:</div>
       ${prjList}
@@ -827,15 +822,11 @@ function renderAdminTab() {
       <button class="admin-add-btn" onclick="addAdminProject()">+ إضافة مشروع جديد</button>
     `;
   } else if(adminTab === 'reviews') {
-    const revCards = document.querySelectorAll('.review-card');
-    const revList = Array.from(revCards).map((el,i)=>{
-      const name = el.querySelector('.review-name')?el.querySelector('.review-name').textContent:'';
-      const text = el.querySelector('.review-text')?el.querySelector('.review-text').textContent:'';
-      return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
-        <div style="flex:1"><div style="font-size:12px;font-weight:700">${name}</div><div style="font-size:11px;color:#888;margin-top:2px">${text.substring(0,50)}...</div></div>
-        <button onclick="delRevCard(${i})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;flex-shrink:0;margin-right:6px">حذف</button>
-      </div>`;
-    }).join('');
+    const revList = adminReviews.map(r=>`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px;background:#f9f9f9;border-radius:8px;margin-bottom:6px;border:1px solid #eee">
+        <div style="flex:1"><div style="font-size:12px;font-weight:700">${r.name||''}</div><div style="font-size:11px;color:#888;margin-top:2px">${(r.text||'').substring(0,50)}...</div></div>
+        <button onclick="delRevCard(${r.id})" style="background:#e74c3c;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;flex-shrink:0;margin-right:6px">حذف</button>
+      </div>`).join('');
     b.innerHTML = `
       <div style="font-size:12px;font-weight:700;color:#c9a84c;margin-bottom:6px">الآراء الموجودة:</div>
       ${revList}
@@ -881,25 +872,28 @@ async function addAdminProduct() {
   renderAdminTab();
 }
 
-function addAdminService() {
+async function addAdminService() {
   const name = document.getElementById('newSName').value;
   if(!name) { showToast('❌ اكتب اسم الخدمة'); return; }
   const s = {
     cat: document.getElementById('newSCat').value,
     icon: document.getElementById('newSIcon').value||'🔧',
     name,
-    desc: document.getElementById('newSDesc').value,
+    description: document.getElementById('newSDesc').value,
     price: document.getElementById('newSPrice').value||'حسب المشروع',
     img: document.getElementById('newSImg').value,
   };
-  adminServices.push(s);
-  // Add to services page
+  showToast('⏳ جاري الحفظ...');
+  const res = await SB.insert('services', s);
+  const saved = res ? (Array.isArray(res)?res[0]:res) : {...s,id:Date.now()};
+  adminServices.push(saved);
   const svcDiv = s.cat==='تشطيبات' ? document.querySelector('.svc-section-title.svc-finishing') : document.querySelector('.svc-section-title.svc-maintenance');
   if(svcDiv) {
     const card = document.createElement('div');
     card.className = 'svc-card';
+    card.dataset.id = saved.id;
     card.innerHTML = `${s.img?`<img class="svc-img" src="${s.img}" alt="" onerror="this.style.display='none'"/>`:''}
-      <div><div class="svc-icon">${s.icon}</div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.desc}</div><div class="svc-price">${s.price}</div>
+      <div><div class="svc-icon">${s.icon}</div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.description||''}</div><div class="svc-price">${s.price}</div>
       <button class="btn-wa-small" onclick="window.open('https://wa.me/201121543995?text=مرحباً، أريد الاستفسار عن: ${s.name}','_blank')">💬 استفسر الآن</button></div>`;
     svcDiv.insertAdjacentElement('afterend', card);
   }
@@ -919,15 +913,16 @@ async function addAdminProject() {
   };
   showToast('⏳ جاري الحفظ...');
   const res = await SB.insert('projects', p);
-  if(res) p.id = Array.isArray(res)?res[0].id:res.id;
-  adminProjects.push(p);
+  const saved = res ? (Array.isArray(res)?res[0]:res) : {...p,id:Date.now()};
+  adminProjects.push(saved);
   const pg = document.querySelector('#page-projects .section');
   const empty = pg.querySelector('.empty-state');
   if(empty) { pg.innerHTML = '<div class="projects-grid" id="projectsGrid"></div>'; }
   const grid = document.getElementById('projectsGrid') || (() => { const d=document.createElement('div'); d.className='projects-grid'; d.id='projectsGrid'; pg.appendChild(d); return d; })();
   const card = document.createElement('div');
   card.className = 'project-card';
-  card.innerHTML = buildProjectCard(p);
+  card.dataset.id = saved.id;
+  card.innerHTML = buildProjectCard(saved);
   grid.appendChild(card);
   showToast('✅ أُضيف المشروع: '+name);
   renderAdminTab();
@@ -942,12 +937,14 @@ async function addAdminReview() {
     text: document.getElementById('newRevText').value,
   };
   showToast('⏳ جاري الحفظ...');
-  await SB.insert('reviews', r);
-  adminReviews.push(r);
+  const res = await SB.insert('reviews', r);
+  const saved = res ? (Array.isArray(res)?res[0]:res) : {...r,id:Date.now()};
+  adminReviews.push(saved);
   const reviewsDiv = document.querySelector('.reviews');
   if(reviewsDiv) {
     const card = document.createElement('div');
     card.className = 'review-card';
+    card.dataset.id = saved.id;
     card.innerHTML = `<div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">${r.text}</p><div class="review-name">${r.name}</div><div class="review-role">${r.role}</div>`;
     reviewsDiv.appendChild(card);
   }
