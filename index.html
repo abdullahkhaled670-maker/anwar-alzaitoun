@@ -570,7 +570,8 @@ async function loadReviews() {
 
 // Load products from Supabase
 async function loadSBProducts() {
-  const data = await SB.get('products');
+  const r = await fetch(`${SB_URL}/rest/v1/products?select=*&order=sort_order.asc`,{headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
+  const data = await r.json();
   if(!Array.isArray(data) || !data.length) {
     document.getElementById('productsGrid').innerHTML = '<p style="color:#aaa;text-align:center;padding:20px;grid-column:1/-1">لا توجد منتجات بعد</p>';
     return;
