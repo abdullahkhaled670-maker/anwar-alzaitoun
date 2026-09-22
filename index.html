@@ -87,8 +87,9 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
 .catalog-grid{display:flex;flex-direction:column;gap:16px;padding:4px 0}
 .catalog-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.09);border:1px solid #f0f0f0}
 .catalog-img-wrap{position:relative;width:100%;height:200px;overflow:hidden;background:#111}
-.catalog-img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .4s}
-.catalog-card:active .catalog-img{transform:scale(1.03)}
+.catalog-img-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:200px;gap:2px}
+.catalog-img-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.catalog-card:active .catalog-img-grid img{transform:scale(1.03)}
 .catalog-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0) 55%)}
 .catalog-title-over{position:absolute;bottom:12px;right:14px;color:#fff;font-family:'Cairo',sans-serif;font-size:18px;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,0.5)}
 .catalog-badge{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#000;font-size:10px;font-weight:800;padding:3px 10px;border-radius:50px}
@@ -273,7 +274,12 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- كهرباء -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <img class="catalog-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="مواد كهربائية" onerror="this.src='https://placehold.co/600x200/1a1a1a/c9a84c?text=⚡+كهرباء'"/>
+          <div class="catalog-img-grid">
+            <img src="https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=300&q=80" alt="لمبات LED" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💡'"/>
+            <img src="https://images.unsplash.com/photo-1509390836518-ea26f7b18a42?w=300&q=80" alt="أسلاك كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔌'"/>
+            <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=300&q=80" alt="قواطع كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=⚡'"/>
+            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&q=80" alt="علب كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📦'"/>
+          </div>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">⚡ كهرباء</div>
           <div class="catalog-title-over">مواد كهربائية</div>
@@ -297,7 +303,12 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- كاميرات -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <img class="catalog-img" src="https://images.unsplash.com/photo-1557597774-9d475d030a98?w=600&q=80" alt="كاميرات مراقبة" onerror="this.src='https://placehold.co/600x200/1a1a1a/c9a84c?text=📷+كاميرات'"/>
+          <div class="catalog-img-grid">
+            <img src="https://images.unsplash.com/photo-1557597774-9d475d030a98?w=300&q=80" alt="كاميرا مراقبة" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📷'"/>
+            <img src="https://images.unsplash.com/photo-1596496050827-8299e0220de1?w=300&q=80" alt="DVR NVR" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🖥️'"/>
+            <img src="https://images.unsplash.com/photo-1580894742597-87bc8789db3d?w=300&q=80" alt="كاميرا IP" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📡'"/>
+            <img src="https://images.unsplash.com/photo-1558002038-1055907df827?w=300&q=80" alt="هارد ديسك مراقبة" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💾'"/>
+          </div>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">📷 مراقبة</div>
           <div class="catalog-title-over">كاميرات مراقبة</div>
@@ -321,7 +332,12 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- دش وستلايت -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <img class="catalog-img" src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=600&q=80" alt="دش وستلايت" onerror="this.src='https://placehold.co/600x200/1a1a1a/c9a84c?text=📡+دش'"/>
+          <div class="catalog-img-grid">
+            <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=300&q=80" alt="طبق دش" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📡'"/>
+            <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&q=80" alt="رسيفر" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📺'"/>
+            <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=300&q=80" alt="أقمار صناعية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🛰️'"/>
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80" alt="كابلات دش" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔌'"/>
+          </div>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">📡 ستلايت</div>
           <div class="catalog-title-over">دش وستلايت</div>
@@ -345,7 +361,12 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- تيار خفيف -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <img class="catalog-img" src="https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=600&q=80" alt="أنظمة التيار الخفيف" onerror="this.src='https://placehold.co/600x200/1a1a1a/c9a84c?text=🔔+تيار+خفيف'"/>
+          <div class="catalog-img-grid">
+            <img src="https://images.unsplash.com/photo-1558002038-1055907df827?w=300&q=80" alt="إنتركم" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔔'"/>
+            <img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&q=80" alt="ساوند سيستم" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔊'"/>
+            <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?w=300&q=80" alt="إنذار حريق" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🚨'"/>
+            <img src="https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=300&q=80" alt="detector دخان" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💨'"/>
+          </div>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">🔌 تيار خفيف</div>
           <div class="catalog-title-over">أنظمة التيار الخفيف</div>
