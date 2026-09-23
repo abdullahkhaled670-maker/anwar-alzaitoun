@@ -111,7 +111,8 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
 /* CATALOG */
 .catalog-grid{display:flex;flex-direction:column;gap:16px;padding:4px 0}
 .catalog-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.09);border:1px solid #f0f0f0}
-.catalog-img-wrap{position:relative;width:100%;height:200px;overflow:hidden;background:#111}
+.catalog-img-wrap{position:relative;width:100%;overflow:hidden;background:#111}
+.catalog-img{width:100%;height:auto;object-fit:contain;display:block;transition:transform .4s}
 .catalog-img-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:200px;gap:2px}
 .catalog-img-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
 .catalog-card:active .catalog-img-grid img{transform:scale(1.03)}
@@ -221,6 +222,16 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
     </div>
   </div>
 
+  <div class="section">
+    <div class="section-title">من <span>نحن؟</span></div>
+    <div class="about-card">
+      <div class="about-text">نحن لسنا مجرد شركة، بل عائلة نبتت جذورها في عالم المقاولات والتشطيبات منذ أكثر من <strong>عشرين عامًا.</strong></div>
+      <div class="about-text">تربّينا في بيئة المعمار، وتعلّمنا على يد أهل الخبرة، وعملنا في مشروعات قومية وخاصة، وتشرفنا بالتعامل مع نخبة من المهندسين والاستشاريين.</div>
+      <div class="about-text">وبعد رحلة طويلة من العمل والخبرة، قررنا أن يكون لنا مكان على أرض الواقع، ننطلق منه لنقدم خبرتنا لكل من يحتاجها، فكانت <strong>أنوار الزيتون.</strong></div>
+      <div class="about-tagline">✨ خبرتنا هي رأس مالنا، وجودتنا هي عنواننا، ورضا العميل هو هدفنا</div>
+    </div>
+  </div>
+
   <div class="section section-white">
     <div class="nav-cards">
       <a class="nav-card" href="#" onclick="showPage('services',document.querySelectorAll('.nav-links a')[1])">
@@ -255,16 +266,6 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <div class="why-card"><div class="why-icon">💰</div><div class="why-title">أسعار تنافسية</div></div>
       <div class="why-card"><div class="why-icon">📞</div><div class="why-title">دعم مستمر</div></div>
       <div class="why-card"><div class="why-icon">📍</div><div class="why-title">مدينة نصر</div></div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">من <span>نحن؟</span></div>
-    <div class="about-card">
-      <div class="about-text">نحن لسنا مجرد شركة، بل عائلة نبتت جذورها في عالم المقاولات والتشطيبات منذ أكثر من <strong>عشرين عامًا.</strong></div>
-      <div class="about-text">تربّينا في بيئة المعمار، وتعلّمنا على يد أهل الخبرة، وعملنا في مشروعات قومية وخاصة، وتشرفنا بالتعامل مع نخبة من المهندسين والاستشاريين.</div>
-      <div class="about-text">وبعد رحلة طويلة من العمل والخبرة، قررنا أن يكون لنا مكان على أرض الواقع، ننطلق منه لنقدم خبرتنا لكل من يحتاجها، فكانت <strong>أنوار الزيتون.</strong></div>
-      <div class="about-tagline">✨ خبرتنا هي رأس مالنا، وجودتنا هي عنواننا، ورضا العميل هو هدفنا</div>
     </div>
   </div>
 
