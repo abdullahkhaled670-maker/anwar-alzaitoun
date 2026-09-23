@@ -55,6 +55,21 @@ nav{background:#fff;border-bottom:3px solid #c9a84c;padding:0 14px;display:flex;
 .reviews{display:flex;flex-direction:column;gap:10px}
 .review-card{padding:14px;background:#fafafa;border-radius:10px;border-right:4px solid #c9a84c}
 .review-stars{color:#c9a84c;font-size:13px;margin-bottom:5px}
+/* ABOUT US */
+.about-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 3px 14px rgba(0,0,0,0.08);border-right:4px solid #c9a84c}
+.about-title{font-family:'Cairo',sans-serif;font-size:16px;font-weight:900;color:#1a1a1a;margin-bottom:10px}
+.about-title span{color:#c9a84c}
+.about-text{font-size:13px;color:#444;line-height:2;margin-bottom:8px}
+.about-tagline{font-size:13px;font-weight:700;color:#c9a84c;text-align:center;padding-top:10px;border-top:1px solid #f0f0f0}
+/* REVIEW FORM */
+.review-form-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 3px 14px rgba(0,0,0,0.08);margin-top:12px}
+.review-form-title{font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;margin-bottom:14px;text-align:center}
+.review-form-title span{color:#c9a84c}
+.review-input{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:11px 13px;font-size:13px;font-family:'Tajawal',sans-serif;margin-bottom:10px;box-sizing:border-box;outline:none;direction:rtl}
+.review-input:focus{border-color:#c9a84c}
+.review-textarea{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:11px 13px;font-size:13px;font-family:'Tajawal',sans-serif;margin-bottom:12px;box-sizing:border-box;outline:none;direction:rtl;resize:none;height:90px}
+.review-textarea:focus{border-color:#c9a84c}
+.review-submit-btn{width:100%;background:#25D366;color:#fff;border:none;border-radius:50px;padding:13px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Tajawal',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
 .review-text{font-size:13px;color:#444;line-height:1.7;margin-bottom:8px}
 .review-name{font-size:13px;font-weight:800}
 .review-role{font-size:12px;color:#888}
@@ -243,12 +258,32 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
     </div>
   </div>
 
+  <div class="section">
+    <div class="section-title">من <span>نحن؟</span></div>
+    <div class="about-card">
+      <div class="about-text">نحن لسنا مجرد شركة، بل عائلة نبتت جذورها في عالم المقاولات والتشطيبات منذ أكثر من <strong>عشرين عامًا.</strong></div>
+      <div class="about-text">تربّينا في بيئة المعمار، وتعلّمنا على يد أهل الخبرة، وعملنا في مشروعات قومية وخاصة، وتشرفنا بالتعامل مع نخبة من المهندسين والاستشاريين.</div>
+      <div class="about-text">وبعد رحلة طويلة من العمل والخبرة، قررنا أن يكون لنا مكان على أرض الواقع، ننطلق منه لنقدم خبرتنا لكل من يحتاجها، فكانت <strong>أنوار الزيتون.</strong></div>
+      <div class="about-tagline">✨ خبرتنا هي رأس مالنا، وجودتنا هي عنواننا، ورضا العميل هو هدفنا</div>
+    </div>
+  </div>
+
   <div class="section section-white">
     <div class="section-title">ماذا قالوا <span>عنا؟</span></div>
     <div class="reviews">
       <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">شغل ممتاز وأمانة. ركبوا لي كاميرات المراقبة في أقل من يوم بسعر معقول جداً.</p><div class="review-name">أحمد محمد</div><div class="review-role">صاحب محل — مدينة نصر</div></div>
       <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">تأسيس الكهرباء في شقتي اتعمل باحترافية ونظافة تامة. فريق محترم.</p><div class="review-name">محمود كمال</div><div class="review-role">مقيم — القاهرة</div></div>
       <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">أفضل شركة مقاولات تعاملت معاها. الأسلاك والمعدات من أفضل ماركات السوق.</p><div class="review-name">خالد عبدالله</div><div class="review-role">مقاول — القاهرة</div></div>
+    </div>
+    <div class="review-form-card">
+      <div class="review-form-title">🌟 شاركنا <span>رأيك</span></div>
+      <input class="review-input" id="reviewName" type="text" placeholder="اسمك الكريم" maxlength="50"/>
+      <input class="review-input" id="reviewPhone" type="tel" placeholder="رقم موبايلك (لن يُنشر)" maxlength="11"/>
+      <textarea class="review-textarea" id="reviewText" placeholder="اكتب تجربتك معنا..."></textarea>
+      <button class="review-submit-btn" onclick="submitReview()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ابعت رأيك على واتساب
+      </button>
     </div>
   </div>
   <div class="cta"><h2>جاهز تبدأ مشروعك؟ 🚀</h2><p>تواصل معنا الآن واحصل على معاينة مجانية</p><div class="cta-btns"><button class="btn-gold" onclick="window.open('tel:01121543995')">📞 اتصل دلوقتي</button><button class="btn-green" onclick="window.open('https://wa.me/201121543995','_blank')">💬 واتساب</button></div></div>
@@ -334,12 +369,7 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- كهرباء -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <div class="catalog-img-grid">
-            <img src="https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=300&q=80" alt="لمبات LED" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💡'"/>
-            <img src="https://images.unsplash.com/photo-1509390836518-ea26f7b18a42?w=300&q=80" alt="أسلاك كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔌'"/>
-            <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=300&q=80" alt="قواطع كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=⚡'"/>
-            <img src="https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&q=80" alt="علب كهربائية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📦'"/>
-          </div>
+          <img class="catalog-img" src="https://res.cloudinary.com/gz1laq3l/image/upload/v1790148512/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A9%D9%A2%D9%A3_%D9%A1%D9%A0%D9%A1%D9%A8%D9%A1%D9%A0.png" alt="مواد كهربائية" onerror="this.src='https://placehold.co/600x200/222/c9a84c?text=⚡+كهرباء'"/>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">⚡ كهرباء</div>
           <div class="catalog-title-over">مواد كهربائية</div>
@@ -363,12 +393,7 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- كاميرات -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <div class="catalog-img-grid">
-            <img src="https://images.unsplash.com/photo-1557597774-9d475d030a98?w=300&q=80" alt="كاميرا مراقبة" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📷'"/>
-            <img src="https://images.unsplash.com/photo-1596496050827-8299e0220de1?w=300&q=80" alt="DVR NVR" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🖥️'"/>
-            <img src="https://images.unsplash.com/photo-1580894742597-87bc8789db3d?w=300&q=80" alt="كاميرا IP" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📡'"/>
-            <img src="https://images.unsplash.com/photo-1558002038-1055907df827?w=300&q=80" alt="هارد ديسك مراقبة" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💾'"/>
-          </div>
+          <img class="catalog-img" src="https://res.cloudinary.com/gz1laq3l/image/upload/v1790148512/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A9%D9%A2%D9%A3_%D9%A1%D9%A0%D9%A1%D9%A5%D9%A3%D9%A3.png" alt="كاميرات مراقبة" onerror="this.src='https://placehold.co/600x200/222/c9a84c?text=📷+كاميرات'"/>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">📷 مراقبة</div>
           <div class="catalog-title-over">كاميرات مراقبة</div>
@@ -392,12 +417,7 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- دش وستلايت -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <div class="catalog-img-grid">
-            <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=300&q=80" alt="طبق دش" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📡'"/>
-            <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&q=80" alt="رسيفر" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=📺'"/>
-            <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=300&q=80" alt="أقمار صناعية" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🛰️'"/>
-            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=80" alt="كابلات دش" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔌'"/>
-          </div>
+          <img class="catalog-img" src="https://res.cloudinary.com/gz1laq3l/image/upload/v1790148511/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A9%D9%A2%D9%A3_%D9%A1%D9%A0%D9%A1%D9%A8%D9%A5%D9%A2.png" alt="دش وستلايت" onerror="this.src='https://placehold.co/600x200/222/c9a84c?text=📡+دش'"/>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">📡 ستلايت</div>
           <div class="catalog-title-over">دش وستلايت</div>
@@ -421,12 +441,7 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
       <!-- تيار خفيف -->
       <div class="catalog-card">
         <div class="catalog-img-wrap">
-          <div class="catalog-img-grid">
-            <img src="https://images.unsplash.com/photo-1558002038-1055907df827?w=300&q=80" alt="إنتركم" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔔'"/>
-            <img src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&q=80" alt="ساوند سيستم" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🔊'"/>
-            <img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?w=300&q=80" alt="إنذار حريق" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=🚨'"/>
-            <img src="https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?w=300&q=80" alt="detector دخان" onerror="this.src='https://placehold.co/300x100/222/c9a84c?text=💨'"/>
-          </div>
+          <img class="catalog-img" src="https://res.cloudinary.com/gz1laq3l/image/upload/v1790148511/IMG_%D9%A2%D9%A0%D9%A2%D9%A6%D9%A0%D9%A9%D9%A2%D9%A3_%D9%A1%D9%A0%D9%A1%D9%A9%D9%A3%D9%A9.png" alt="أنظمة التيار الخفيف" onerror="this.src='https://placehold.co/600x200/222/c9a84c?text=🔔+تيار+خفيف'"/>
           <div class="catalog-overlay"></div>
           <div class="catalog-badge">🔌 تيار خفيف</div>
           <div class="catalog-title-over">أنظمة التيار الخفيف</div>
@@ -1108,6 +1123,19 @@ loadProjects();
 loadReviews();
 loadSBProducts();
 loadSBServices();
+
+function submitReview() {
+  const name = document.getElementById('reviewName').value.trim();
+  const phone = document.getElementById('reviewPhone').value.trim();
+  const text = document.getElementById('reviewText').value.trim();
+  if (!name || !text) { alert('من فضلك اكتب اسمك ورأيك'); return; }
+  if (phone && !/^01[0-9]{9}$/.test(phone)) { alert('رقم الموبايل غير صحيح'); return; }
+  const msg = `🌟 رأي عميل جديد على الموقع\n\n👤 *الاسم:* ${name}\n📱 *الموبايل:* ${phone || 'لم يُذكر'}\n💬 *الرأي:*\n${text}`;
+  window.open(`https://wa.me/201121543995?text=${encodeURIComponent(msg)}`, '_blank');
+  document.getElementById('reviewName').value = '';
+  document.getElementById('reviewPhone').value = '';
+  document.getElementById('reviewText').value = '';
+}
 </script>
 
 <!-- LIGHTBOX -->
