@@ -1196,76 +1196,39 @@ function submitReview() {
 }
 </style>
 
-<!-- INSTAGRAM API SCRIPT -->
+<!-- INSTAGRAM FEED WIDGET -->
 <script>
-const INSTAGRAM_TOKEN = '995294773609546|4SNez1Njnk5V8ZO64L3sPnNpf48';
-
-async function loadInstagramFeed() {
+function loadInstagramFeed() {
   const container = document.getElementById('instagramFeed');
   if (!container) return;
   
-  container.innerHTML = '<div class="instagram-loading">⏳ جاري تحميل الصور...</div>';
-  
-  try {
-    // احصل على معرّف الحساب
-    const meResponse = await fetch(
-      `https://graph.instagram.com/me?fields=id&access_token=${INSTAGRAM_TOKEN}`
-    );
-    
-    if (!meResponse.ok) throw new Error('Failed to get user ID');
-    
-    const meData = await meResponse.json();
-    const accountId = meData.id;
-    
-    // احصل على الصور والفيديوهات
-    const mediaResponse = await fetch(
-      `https://graph.instagram.com/${accountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,permalink,username&access_token=${INSTAGRAM_TOKEN}`
-    );
-    
-    if (!mediaResponse.ok) throw new Error('Failed to fetch media');
-    
-    const mediaData = await mediaResponse.json();
-    const posts = mediaData.data || [];
-    
-    if (posts.length === 0) {
-      container.innerHTML = '<div class="instagram-no-posts">لم تُرفع صور بعد</div>';
-      return;
-    }
-    
-    container.innerHTML = '';
-    const grid = document.createElement('div');
-    grid.className = 'instagram-grid';
-    
-    posts.forEach(post => {
-      const post_elem = document.createElement('a');
-      post_elem.href = post.permalink;
-      post_elem.target = '_blank';
-      post_elem.rel = 'noopener noreferrer';
-      post_elem.className = 'instagram-post' + (post.media_type === 'VIDEO' ? ' instagram-post-video' : '');
-      
-      const imgSrc = post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url;
-      post_elem.innerHTML = `<img src="${imgSrc}" alt="${post.caption || 'Instagram post'}" loading="lazy"/>`;
-      
-      grid.appendChild(post_elem);
-    });
-    
-    container.appendChild(grid);
-    
-  } catch (error) {
-    console.error('Instagram Error:', error);
-    container.innerHTML = '<div class="instagram-no-posts">❌ حدث خطأ في تحميل الصور</div>';
-  }
+  // استخدام Instagram Embed من الخادم الرسمي
+  container.innerHTML = `
+    <div style="display: flex; justify-content: center; margin: 20px 0;">
+      <iframe src="https://www.instagram.com/anwar_alzaitoun/embed" width="100%" height="600" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+    </div>
+    <div style="text-align: center; padding: 20px;">
+      <a href="https://www.instagram.com/anwar_alzaitoun/" target="_blank" style="color: #c9a84c; font-weight: 700; text-decoration: none;">👉 شاهد حسابنا الكامل على Instagram</a>
+    </div>
+  `;
 }
 
-// حمّل الصور عند فتح صفحة المشاريع
+// حمّل الصور
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     if (document.getElementById('instagramFeed')) {
       loadInstagramFeed();
+      // اعد تحميل Instagram embeds
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      }
     }
-  }, 500);
+  }, 300);
 });
 </script>
+
+<!-- Instagram Embed Script -->
+<script async src="https://www.instagram.com/embed.js"></script>
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()">
