@@ -468,7 +468,10 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
     <h1 style="font-family:'Cairo',sans-serif;font-size:22px;font-weight:900;margin:0">مشاريع <span style="background:linear-gradient(135deg,#c9a84c,#e8c96a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">تتحدث عن نفسها</span></h1>
   </div>
   <div class="section">
-    <div class="empty-state"><div class="empty-icon">🏗️</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">صور مشاريعنا قريباً</div><div style="font-size:13px">ترقبوا صور أعمالنا الحقيقية</div></div>
+    <div style="margin-bottom:12px;padding:0 2px">
+      <span style="font-size:12px;color:#888;font-weight:700">📸 صور من حسابنا على Instagram</span>
+    </div>
+    <div id="instagramFeed"></div>
   </div>
   <div class="cta"><h2>عايز نشتغل سوا؟ 🚀</h2><p>تواصل معنا الآن واحصل على معاينة مجانية</p><div class="cta-btns"><button class="btn-gold" onclick="window.open('tel:01121543995')">📞 اتصل</button><button class="btn-green" onclick="window.open('https://wa.me/201121543995','_blank')">💬 واتساب</button></div></div>
 </div>
@@ -1129,6 +1132,139 @@ function submitReview() {
   document.getElementById('reviewPhone').value = '';
   document.getElementById('reviewText').value = '';
 }
+</script>
+
+<!-- INSTAGRAM INTEGRATION STYLES -->
+<style>
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 0;
+}
+
+.instagram-post {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.instagram-post:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.instagram-post img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.instagram-post-video::after {
+  content: "▶";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: white;
+  background: rgba(0,0,0,0.4);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.instagram-loading {
+  text-align: center;
+  padding: 30px 16px;
+  color: #999;
+}
+
+.instagram-no-posts {
+  text-align: center;
+  padding: 30px 16px;
+  color: #c9a84c;
+  font-weight: 700;
+}
+</style>
+
+<!-- INSTAGRAM API SCRIPT -->
+<script>
+const INSTAGRAM_TOKEN = '995294773609546|4SNez1Njnk5V8ZO64L3sPnNpf48';
+
+async function loadInstagramFeed() {
+  const container = document.getElementById('instagramFeed');
+  if (!container) return;
+  
+  container.innerHTML = '<div class="instagram-loading">⏳ جاري تحميل الصور...</div>';
+  
+  try {
+    // احصل على معرّف الحساب
+    const meResponse = await fetch(
+      `https://graph.instagram.com/me?fields=id&access_token=${INSTAGRAM_TOKEN}`
+    );
+    
+    if (!meResponse.ok) throw new Error('Failed to get user ID');
+    
+    const meData = await meResponse.json();
+    const accountId = meData.id;
+    
+    // احصل على الصور والفيديوهات
+    const mediaResponse = await fetch(
+      `https://graph.instagram.com/${accountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,permalink,username&access_token=${INSTAGRAM_TOKEN}`
+    );
+    
+    if (!mediaResponse.ok) throw new Error('Failed to fetch media');
+    
+    const mediaData = await mediaResponse.json();
+    const posts = mediaData.data || [];
+    
+    if (posts.length === 0) {
+      container.innerHTML = '<div class="instagram-no-posts">لم تُرفع صور بعد</div>';
+      return;
+    }
+    
+    container.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'instagram-grid';
+    
+    posts.forEach(post => {
+      const post_elem = document.createElement('a');
+      post_elem.href = post.permalink;
+      post_elem.target = '_blank';
+      post_elem.rel = 'noopener noreferrer';
+      post_elem.className = 'instagram-post' + (post.media_type === 'VIDEO' ? ' instagram-post-video' : '');
+      
+      const imgSrc = post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url;
+      post_elem.innerHTML = `<img src="${imgSrc}" alt="${post.caption || 'Instagram post'}" loading="lazy"/>`;
+      
+      grid.appendChild(post_elem);
+    });
+    
+    container.appendChild(grid);
+    
+  } catch (error) {
+    console.error('Instagram Error:', error);
+    container.innerHTML = '<div class="instagram-no-posts">❌ حدث خطأ في تحميل الصور</div>';
+  }
+}
+
+// حمّل الصور عند فتح صفحة المشاريع
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (document.getElementById('instagramFeed')) {
+      loadInstagramFeed();
+    }
+  }, 500);
+});
 </script>
 
 <!-- LIGHTBOX -->
