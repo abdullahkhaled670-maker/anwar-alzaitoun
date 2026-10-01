@@ -211,6 +211,7 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
     <a href="#" onclick="showPage('services',this)">الخدمات</a>
     <a href="#" onclick="showPage('store',this)">🛒 <span id="cartBadge"></span>المتجر</a>
     <a href="#" onclick="showPage('projects',this)">مشاريعنا</a>
+    <a href="#" onclick="showPage('consultation',this)">💡 استشارات</a>
     <a href="#" onclick="showPage('contact',this)">تواصل</a>
   </div>
 </nav>
@@ -219,8 +220,9 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
 <div id="page-home" class="page active">
   <div class="hero" style="padding:40px 16px;text-align:center">
     <div style="font-size:48px;margin-bottom:12px">🏗️</div>
-    <h1 style="font-family:'Cairo',sans-serif;font-size:28px;font-weight:900;margin:0;color:#fff">انوار الزيتون</h1>
-    <p style="color:#c9a84c;font-size:14px;font-weight:700;margin-top:8px">تشطيبات واحترافية متكاملة</p>
+    <h1 style="font-family:'Cairo',sans-serif;font-size:32px;font-weight:900;margin:0;color:#fff;letter-spacing:2px;text-shadow:2px 2px 8px rgba(0,0,0,0.5)">انوار الزيتون للتوريدات والتشطيبات</h1>
+    <p style="color:#D4AF37;font-size:16px;font-weight:800;margin-top:12px;letter-spacing:1px">تأسيس • تشطيب • صيانة</p>
+    <p style="color:rgba(255,255,255,0.9);font-size:15px;font-weight:600;margin-top:14px;line-height:1.8;font-style:italic">«نبني معك اليوم… لنشاركك نجاح الغد»</p>
     <p style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:12px">مقاولات • إنارة ليد • أنظمة التيار الخفيف</p>
   </div>
 
@@ -257,7 +259,12 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
         <div><div class="nav-card-title">مشاريعنا</div><div class="nav-card-desc">أعمال تتحدث عن نفسها</div></div>
         <span class="nav-card-arrow">←</span>
       </a>
-      <a class="nav-card" href="#" onclick="showPage('contact',document.querySelectorAll('.nav-links a')[4])">
+      <a class="nav-card" href="#" onclick="showPage('consultation',document.querySelectorAll('.nav-links a')[4])">
+        <span class="nav-card-icon">💡</span>
+        <div><div class="nav-card-title">استشارات مجانية</div><div class="nav-card-desc">اطلب نصيحة متخصصة الآن</div></div>
+        <span class="nav-card-arrow">←</span>
+      </a>
+      <a class="nav-card" href="#" onclick="showPage('contact',document.querySelectorAll('.nav-links a')[5])">
         <span class="nav-card-icon">📞</span>
         <div><div class="nav-card-title">تواصل معنا</div><div class="nav-card-desc">011 2154 3995 — 02-2734860</div></div>
         <span class="nav-card-arrow">←</span>
@@ -525,6 +532,30 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
   </div>
 </div>
 
+<!-- CONSULTATION SECTION -->
+<div id="page-consultation" class="page">
+  <div class="hero" style="padding:30px 16px 22px">
+    <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#c9a84c;text-transform:uppercase;margin-bottom:6px">استشارات مجانية</div>
+    <h1 style="font-family:'Cairo',sans-serif;font-size:22px;font-weight:900;margin:0">اطلب <span style="background:linear-gradient(135deg,#c9a84c,#e8c96a);-webkit-background-clip:text;-webkit-text-fill-color:transparent">استشارتك</span></h1>
+    <p style="color:rgba(255,255,255,0.65);font-size:12px;margin-top:6px">نحتاج نصيحة متخصصة؟ تواصل معنا الآن</p>
+  </div>
+  <div class="section">
+    <div class="review-form-card">
+      <div class="review-form-title">🎯 نموذج <span>الاستشارة</span></div>
+      <input type="text" id="consultName" placeholder="اسمك الكامل *" class="review-input" style="text-align:right"/>
+      <input type="tel" id="consultPhone" placeholder="موبايل / واتساب *" class="review-input" style="text-align:right"/>
+      <textarea id="consultText" placeholder="اكتب استشارتك أو النصيحة اللي محتاجها... *" class="review-textarea" style="text-align:right"></textarea>
+      <button class="review-submit-btn" onclick="submitConsultation()">
+        <span>📤 أرسل الاستشارة</span>
+      </button>
+    </div>
+    <div style="background:rgba(201,168,76,0.08);border-right:4px solid #c9a84c;border-radius:12px;padding:14px;margin-top:16px;text-align:right">
+      <div style="font-size:13px;font-weight:700;color:#c9a84c;margin-bottom:8px">💡 نصيحة:</div>
+      <div style="font-size:12px;color:#666;line-height:1.8">اكتب استشارتك بالتفصيل، وسنرد عليك في أقرب وقت ممكن عبر الواتساب. استشاراتنا مجانية وسرية 100%</div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <div class="footer-logo">🏗️ انوار الزيتون</div>
   <div class="footer-sub">للتوريد والتشطيبات — مدينة نصر، القاهرة</div>
@@ -533,7 +564,8 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
     <a href="#" onclick="showPage('services',document.querySelectorAll('.nav-links a')[1])">الخدمات</a>
     <a href="#" onclick="showPage('store',document.querySelectorAll('.nav-links a')[2])">المتجر</a>
     <a href="#" onclick="showPage('projects',document.querySelectorAll('.nav-links a')[3])">مشاريعنا</a>
-    <a href="#" onclick="showPage('contact',document.querySelectorAll('.nav-links a')[4])">تواصل</a>
+    <a href="#" onclick="showPage('consultation',document.querySelectorAll('.nav-links a')[4])">استشارات</a>
+    <a href="#" onclick="showPage('contact',document.querySelectorAll('.nav-links a')[5])">تواصل</a>
   </div>
   <div class="footer-copy">© 2026 انوار الزيتون للتوريد والتشطيبات — مدينة نصر، القاهرة</div>
 </footer>
@@ -1142,6 +1174,21 @@ loadProjects();
 loadReviews();
 loadSBProducts();
 loadSBServices();
+
+function submitConsultation() {
+  const name = document.getElementById('consultName').value.trim();
+  const phone = document.getElementById('consultPhone').value.trim();
+  const text = document.getElementById('consultText').value.trim();
+  if (!name || !phone || !text) {
+    alert('من فضلك ملء جميع الحقول المطلوبة!');
+    return;
+  }
+  const msg = `📋 استشارة جديدة من الموقع\n\n👤 *الاسم:* ${name}\n📱 *الموبايل:* ${phone}\n\n💬 *الاستشارة:*\n${text}\n\n⏰ من فضلك رد عليّ في أقرب وقت`;
+  window.open(`https://wa.me/201121543995?text=${encodeURIComponent(msg)}`, '_blank');
+  document.getElementById('consultName').value = '';
+  document.getElementById('consultPhone').value = '';
+  document.getElementById('consultText').value = '';
+}
 
 function submitReview() {
   const name = document.getElementById('reviewName').value.trim();
