@@ -1,0 +1,18 @@
+name: Keep Supabase awake
+
+# Pings the database twice a week so the free Supabase project is not paused
+# for inactivity. It only READS one row using the public (anon) key.
+on:
+  schedule:
+    - cron: "0 6 * * 1,4"   # Monday and Thursday, 06:00 UTC
+  workflow_dispatch: {}      # lets you run it by hand from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          curl -fsS "https://yivebjxkztbgpzhkrtwy.supabase.co/rest/v1/reviews?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpdmVianhrenRiZ3B6aGtydHd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzU4OTQsImV4cCI6MjEwMjAxMTg5NH0.wnrPwb738VFWwPjlqRgiEWZxsyRz8Ud72L_8WHPIvLg" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpdmVianhrenRiZ3B6aGtydHd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzU4OTQsImV4cCI6MjEwMjAxMTg5NH0.wnrPwb738VFWwPjlqRgiEWZxsyRz8Ud72L_8WHPIvLg"
