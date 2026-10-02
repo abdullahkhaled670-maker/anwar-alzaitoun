@@ -743,6 +743,31 @@ function showToast(msg) {
 const SB_URL = 'https://yivebjxkztbgpzhkrtwy.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpdmVianhrenRiZ3B6aGtydHd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MzU4OTQsImV4cCI6MjEwMjAxMTg5NH0.wnrPwb738VFWwPjlqRgiEWZxsyRz8Ud72L_8WHPIvLg';
 
+const AUTH = {
+  s: null,
+  load() { try { const j = sessionStorage.getItem('sb_session'); if(j) this.s = JSON.parse(j); } catch(e) {} },
+  save() { try { if(this.s) sessionStorage.setItem('sb_session', JSON.stringify(this.s)); else sessionStorage.removeItem('sb_session'); } catch(e) {} },
+  _set(d) { this.s = {access:d.access_token, refresh:d.refresh_token, exp:Date.now()+Math.max((d.expires_in||3600)-60,60)*1000}; this.save(); },
+  async login(email, password) {
+    const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    if(!r.ok) return false;
+    this._set(await r.json());
+    return true;
+  },
+  async token() {
+    if(!this.s) return null;
+    if(Date.now() < this.s.exp) return this.s.access;
+    try {
+      const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:this.s.refresh})});
+      if(r.ok) { this._set(await r.json()); return this.s.access; }
+    } catch(e) {}
+    this.s = null; this.save();
+    return null;
+  },
+  logout() { this.s = null; this.save(); }
+};
+AUTH.load();
+
 const SB = {
   async get(t) {
     try {
@@ -750,16 +775,26 @@ const SB = {
       return r.json();
     } catch(e) { return []; }
   },
-  async insert(t, d) {
+  async _write(method, url, body) {
+    const tk = await AUTH.token();
+    if(!tk) { showToast('❌ سجّل الدخول من جديد'); throw new Error('no-auth'); }
+    let r;
     try {
-      const r = await fetch(`${SB_URL}/rest/v1/${t}`,{method:'POST',headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(d)});
-      return r.json();
-    } catch(e) { return null; }
+      r = await fetch(url,{method,headers:{apikey:SB_KEY,Authorization:`Bearer ${tk}`,'Content-Type':'application/json',Prefer:'return=representation'},body:body?JSON.stringify(body):undefined});
+    } catch(e) { showToast('❌ مفيش اتصال بالإنترنت'); throw e; }
+    if(!r.ok) { showToast(r.status===401||r.status===403 ? '❌ مفيش صلاحية، سجّل الدخول من جديد' : '❌ فشل الحفظ ('+r.status+')'); throw new Error('sb-'+r.status); }
+    return r;
+  },
+  async insert(t, d) {
+    const r = await this._write('POST', `${SB_URL}/rest/v1/${t}`, d);
+    return r.json();
+  },
+  async update(t, id, d) {
+    const r = await this._write('PATCH', `${SB_URL}/rest/v1/${t}?id=eq.${id}`, d);
+    return r.json();
   },
   async del(t, id) {
-    try {
-      await fetch(`${SB_URL}/rest/v1/${t}?id=eq.${id}`,{method:'DELETE',headers:{apikey:SB_KEY,Authorization:`Bearer ${SB_KEY}`}});
-    } catch(e) {}
+    await this._write('DELETE', `${SB_URL}/rest/v1/${t}?id=eq.${id}`);
   }
 };
 
@@ -902,7 +937,6 @@ async function loadSBServices() {
 }
 
 // ===== ADMIN =====
-const ADMIN_HASH = '9e327be69229ed928e326a4586f353896fde9161fc051f2af7e5037bb23d981f';
 const CLOUD_NAME = 'gz1laq3l';
 const UPLOAD_PRESET = 'rvkxvkfi';
 let logoTaps = 0;
@@ -915,27 +949,34 @@ let adminProjects = [];
 let adminReviews = [];
 let adminServices = [];
 
+function openAdminPanel() { document.getElementById('adminLogin').style.display='none'; document.getElementById('adminPanel').style.display='block'; renderAdminTab(); }
 function handleLogoTap() {
   logoTaps++;
-  if(logoTaps >= 3) { logoTaps=0; document.getElementById('adminLogin').style.display='flex'; document.getElementById('passInput').value=''; }
+  if(logoTaps >= 3) {
+    logoTaps = 0;
+    if(AUTH.s) { openAdminPanel(); }
+    else { document.getElementById('adminLogin').style.display='flex'; document.getElementById('passInput').value=''; }
+  }
   setTimeout(()=>{ if(logoTaps>0) logoTaps=0; }, 2000);
 }
 
 async function checkPass() {
-  const v = document.getElementById('passInput').value;
-  const enc = new TextEncoder().encode(v);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  const hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(hash === ADMIN_HASH) { document.getElementById('adminLogin').style.display='none'; document.getElementById('adminPanel').style.display='block'; renderAdminTab(); showToast('✅ تم الدخول!'); }
-  else showToast('❌ كلمة السر غلط');
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  if(!email || !pass) { showToast('اكتب الإيميل وكلمة السر'); return; }
+  showToast('⏳ جاري الدخول...');
+  let ok = false;
+  try { ok = await AUTH.login(email, pass); } catch(e) { showToast('❌ مفيش اتصال بالإنترنت'); return; }
+  if(ok) { document.getElementById('passInput').value=''; openAdminPanel(); showToast('✅ تم الدخول!'); }
+  else showToast('❌ الإيميل أو كلمة السر غلط');
 }
 
 
 // Delete helpers
 async function delProduct(id) {
   if(!confirm('حذف المنتج؟')) return;
-  ALL_PRODUCTS.splice(ALL_PRODUCTS.findIndex(p=>p.id===id),1);
   await SB.del('products', id);
+  ALL_PRODUCTS.splice(ALL_PRODUCTS.findIndex(p=>p.id===id),1);
   renderProducts(currentCat==='الكل'?ALL_PRODUCTS:ALL_PRODUCTS.filter(x=>x.cat===currentCat));
   renderAdminTab();
   showToast('✅ تم الحذف');
@@ -970,20 +1011,21 @@ async function delPrjCard(id) {
   showToast('✅ تم الحذف');
 }
 
-function editProduct(id) {
+async function editProduct(id) {
   const p = ALL_PRODUCTS.find(x=>x.id===id);
   if(!p) return;
   const newName = prompt('اسم المنتج:', p.name);
   if(!newName) return;
   const newPrice = prompt('السعر:', p.price);
   const newDesc = prompt('الوصف:', p.desc);
+  let rows;
+  try { rows = await SB.update('products', id, {name:newName, price:Number(newPrice)||p.price, description:newDesc||p.desc}); } catch(e) { return; }
   p.name = newName;
   p.price = Number(newPrice)||p.price;
   p.desc = newDesc||p.desc;
-  SB.insert('products', {id:p.id,name:p.name,price:p.price,description:p.desc,cat:p.cat,unit:p.unit,badge:p.badge,img:p.img});
   renderProducts(currentCat==='الكل'?ALL_PRODUCTS:ALL_PRODUCTS.filter(x=>x.cat===currentCat));
   renderAdminTab();
-  showToast('✅ تم التعديل');
+  showToast(rows && rows.length ? '✅ تم التعديل' : '⚠️ اتعدّل على الصفحة بس، المنتج مش محفوظ في قاعدة البيانات');
 }
 
 
@@ -1001,7 +1043,7 @@ function saveSettings() {
   showToast('✅ تم حفظ الإعدادات');
 }
 
-function exitAdmin() { document.getElementById('adminPanel').style.display='none'; }
+function exitAdmin() { document.getElementById('adminPanel').style.display='none'; AUTH.logout(); }
 
 function setAdminTab(tab, btn) {
   adminTab = tab;
@@ -1362,7 +1404,8 @@ document.addEventListener('DOMContentLoaded', () => {
 <div id="adminLogin" style="display:none" class="admin-login" onclick="if(event.target===this)this.style.display='none'">
   <div class="admin-login-box">
     <h3>⚙️ لوحة التحكم</h3>
-    <input type="password" id="passInput" placeholder="كلمة السر" class="admin-input" style="margin-bottom:12px"
+    <input type="email" id="emailInput" placeholder="الإيميل" autocomplete="username" class="admin-input" style="margin-bottom:10px;direction:ltr;text-align:left"/>
+    <input type="password" id="passInput" placeholder="كلمة السر" autocomplete="current-password" class="admin-input" style="margin-bottom:12px;direction:ltr;text-align:left"
       onkeydown="if(event.key==='Enter')checkPass()"/>
     <button class="admin-login-btn" onclick="checkPass()">دخول</button>
   </div>
