@@ -324,11 +324,8 @@ footer{background:#1a1a1a;padding:22px 14px;text-align:center;color:#fff}
   </div>
 
   <div class="section section-white">
-    <div class="section-title">ماذا قالوا <span>عنا؟</span></div>
+    <div class="section-title" id="reviewsTitle" style="display:none">ماذا قالوا <span>عنا؟</span></div>
     <div class="reviews">
-      <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">شغل ممتاز وأمانة. ركبوا لي كاميرات المراقبة في أقل من يوم بسعر معقول جداً.</p><div class="review-name">أحمد محمد</div><div class="review-role">صاحب محل — مدينة نصر</div></div>
-      <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">تأسيس الكهرباء في شقتي اتعمل باحترافية ونظافة تامة. فريق محترم.</p><div class="review-name">محمود كمال</div><div class="review-role">مقيم — القاهرة</div></div>
-      <div class="review-card"><div class="review-stars">⭐⭐⭐⭐⭐</div><p class="review-text">أفضل شركة مقاولات تعاملت معاها. الأسلاك والمعدات من أفضل ماركات السوق.</p><div class="review-name">خالد عبدالله</div><div class="review-role">مقاول — القاهرة</div></div>
     </div>
     <div class="review-form-card">
       <div class="review-form-title">🌟 شاركنا <span>رأيك</span></div>
@@ -1472,6 +1469,17 @@ document.addEventListener('click', function(e){
   var m = h.indexOf('wa.me') > -1 ? 'whatsapp' : h.indexOf('tel:') > -1 ? 'phone' : h.indexOf('facebook.com') > -1 ? 'facebook' : h.indexOf('instagram.com') > -1 ? 'instagram' : '';
   if(m) gtag('event','contact_click',{method:m, page:currentPageId});
 });
+</script>
+
+<script>
+// show the reviews heading only when real reviews exist
+(function(){
+  var box = document.querySelector('.reviews'), t = document.getElementById('reviewsTitle');
+  if(!box || !t) return;
+  function sync(){ t.style.display = box.querySelector('.review-card') ? '' : 'none'; }
+  new MutationObserver(sync).observe(box,{childList:true});
+  sync();
+})();
 </script>
 
 </body>
